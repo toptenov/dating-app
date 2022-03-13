@@ -12,6 +12,7 @@ class ClientSerializer(serializers.Serializer):
         validators=[UniqueValidator(queryset=Client.objects.all())]
             )
     is_male = serializers.BooleanField()
-    full_name = serializers.CharField(max_length=255)
+    first_name = serializers.CharField(max_length=255)
+    last_name = serializers.CharField(max_length=255)
     avatar = serializers.ImageField(required=False, max_length=None, use_url=True)
     password = serializers.CharField(write_only=True, min_length=3)

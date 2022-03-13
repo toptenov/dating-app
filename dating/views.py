@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
 from dating.models import Client
@@ -12,7 +12,33 @@ class ClientAPIView(CreateAPIView):
             client = Client()
             client.email = request.data.get("email")
             client.set_password(request.data.get("password"))
-            client.full_name = request.data.get("full_name")
+            client.first_name = request.data.get("first_name")
+            client.last_name = request.data.get("last_name")
             client.is_male = request.data.get("is_male")
             client.save()
             return Response({'client': ClientSerializer(client).data})
+
+
+class ClientListAPIView(ListAPIView):
+    def get(self, request):
+        clients = Client.objects.all()
+        if "is_male" in request.query_params:
+            clients = clients.filter(is_male=bool(eval(request.query_params["is_male"].capitalize())))
+        if "first_name" in request.query_params:
+            clients = clients.filter(first_name=request.query_params["first_name"])
+        if "last_name" in request.query_params:
+            clients = clients.filter(last_name=request.query_params["last_name"])
+        serializer = ClientSerializer(clients, many=True)
+        return Response({'clients': serializer.data})
+
+class ClientRetrieveAPIView(RetrieveAPIView):
+    def get(self, request, **kwargs):
+        pk = kwargs["pk"]
+
+        try:
+            client = Client.objects.get(pk=pk)
+            serializer = ClientSerializer(client)
+        except:
+            return Response({"error": "Нет такого клиента, ID =" + str(pk)})
+
+        return Response({"client": serializer.data})

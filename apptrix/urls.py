@@ -18,10 +18,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from dating.views import ClientAPIView
+from dating.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/client/create/', ClientAPIView.as_view()),
+    path('api/client/create/', ClientAPIView.as_view()),
+    path('api/list/', ClientListAPIView.as_view()),
+    path('api/client/<int:pk>/', ClientRetrieveAPIView.as_view()),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
