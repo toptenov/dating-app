@@ -1,5 +1,8 @@
+from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from dating.models import Client
 from dating.serializers import ClientSerializer
@@ -31,6 +34,8 @@ class ClientListAPIView(ListAPIView):
         serializer = ClientSerializer(clients, many=True)
         return Response({'clients': serializer.data})
 
+    permission_classes = (IsAuthenticated,)
+
 class ClientRetrieveAPIView(RetrieveAPIView):
     def get(self, request, **kwargs):
         pk = kwargs["pk"]
@@ -42,3 +47,11 @@ class ClientRetrieveAPIView(RetrieveAPIView):
             return Response({"error": "Нет такого клиента, ID =" + str(pk)})
 
         return Response({"client": serializer.data})
+
+    permission_classes = (IsAuthenticated,)
+
+
+class LogoutAPIView(APIView):
+    def get(self, request, format=None):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)

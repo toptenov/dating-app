@@ -17,11 +17,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 
 from dating.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("login/", obtain_auth_token, name="obtain-auth-token"),
+    path("logout/", LogoutAPIView.as_view()),
     path('api/client/create/', ClientAPIView.as_view()),
     path('api/list/', ClientListAPIView.as_view()),
     path('api/client/<int:pk>/', ClientRetrieveAPIView.as_view()),
