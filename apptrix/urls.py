@@ -23,10 +23,10 @@ from dating.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("login/", obtain_auth_token, name="obtain-auth-token"),
-    path("logout/", LogoutAPIView.as_view()),
+    path('login/', obtain_auth_token, name="obtain-auth-token"),
+    path('logout/', LogoutAPIView.as_view()),
     path('api/client/create/', ClientAPIView.as_view()),
     path('api/list/', ClientListAPIView.as_view()),
     path('api/client/<int:pk>/', ClientRetrieveAPIView.as_view()),
-]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api/client/<int:pk>/match/', MatchCreateAPIView.as_view()),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

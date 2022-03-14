@@ -1,3 +1,4 @@
 .git
 db.sqlite3
 dating/migrations
+db.sqlite3-journal

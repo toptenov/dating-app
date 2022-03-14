@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import send_mail
 
 
 class CustomUserManager(BaseUserManager):
@@ -25,5 +26,23 @@ class Client(AbstractBaseUser):
 
     objects = CustomUserManager()
 
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """
+        Sends an email to this Client.
+        """
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+        print("Email has been successfully sent")
+
     def __str__(self):
         return f"{self.email}"
+
+
+class Match(models.Model):
+    subject = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="subject_id")
+    object = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="object_id")
+
+    class Meta:
+        unique_together = (('subject', 'object'), )
+
+    def __str__(self):
+        return f"{self.pk}"
