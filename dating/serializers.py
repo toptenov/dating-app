@@ -17,6 +17,9 @@ class ClientSerializer(serializers.Serializer):
     avatar = serializers.ImageField(required=False, max_length=None, use_url=True)
     password = serializers.CharField(write_only=True, min_length=3)
 
+    def create(self, validated_data):
+        return Client.objects.create(**validated_data)
+
 
 class MatchSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)

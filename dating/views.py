@@ -1,26 +1,42 @@
+from PIL import Image
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apptrix import settings
 from dating.models import Client, Match
 from dating.serializers import ClientSerializer, MatchSerializer
+
+
+def add_watermark(input_image_path):
+    base_image = Image.open(input_image_path)
+    watermark = Image.open(settings.MEDIA_ROOT + '/watermark/watermark.png')
+    watermark.putalpha(120)
+    width, height = base_image.size
+
+    transparent = Image.new('RGB', (width, height), (0, 0, 0))
+    transparent.paste(base_image, (0, 0))
+    transparent.paste(watermark, (0, 0), mask=watermark)
+    transparent.save(input_image_path)
 
 
 class ClientAPIView(CreateAPIView):
     def post(self, request):
         serializer = ClientSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            client = Client()
-            client.email = request.data.get("email")
-            client.set_password(request.data.get("password"))
-            client.first_name = request.data.get("first_name")
-            client.last_name = request.data.get("last_name")
-            client.avatar = request.data.get("avatar")
-            client.is_male = request.data.get("is_male")
-            client.save()
-            return Response({'client': ClientSerializer(client).data})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # Set a hashed password:
+        client = Client.objects.get(pk=serializer.data["id"])
+        client.set_password(request.data.get("password"))
+        client.save()
+
+        input_image_path = settings.MEDIA_ROOT + '/' + str(client.avatar)
+        add_watermark(input_image_path)
+
+        return Response({'client': serializer.data})
 
 
 class ClientListAPIView(ListAPIView):
