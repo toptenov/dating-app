@@ -20,7 +20,7 @@ class Client(AbstractBaseUser):
     first_name = models.CharField(blank=True, max_length=255)
     last_name = models.CharField(blank=True, max_length=255)
     is_male = models.BooleanField(blank=True)
-    avatar = models.ImageField(upload_to='photos/%Y/%m/%d/', default="photos/None/No-img.jpg")
+    avatar = models.ImageField(upload_to='photos/%Y/%m/%d/', default="photos/None/No-img.png")
 
     USERNAME_FIELD = "email"
 
